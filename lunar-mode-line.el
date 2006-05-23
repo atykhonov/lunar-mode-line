@@ -9,7 +9,7 @@
 ;; Status: Works in Emacs 22
 ;; Created: 2006-05-22
 
-;; $Id$
+;; $Id: lunar-mode-line.el 2 2006-05-23 17:22:58Z intrigeri $
 
 ;; This program is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
