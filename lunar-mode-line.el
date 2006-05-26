@@ -9,7 +9,7 @@
 ;; Status: Works in Emacs 22
 ;; Created: 2006-05-22
 
-;; $Id: lunar-mode-line.el 3 2006-05-23 17:23:55Z intrigeri $
+;; $Id: lunar-mode-line.el 4 2006-05-26 16:37:05Z intrigeri $
 ;; $URL: https://intrigeri.boum.org/svn/pub/lunar-mode-line/lunar-mode-line.el $
 
 ;; This program is free software; you can redistribute it and/or modify it
@@ -56,6 +56,16 @@
   :type 'integer
   :group 'lunar-mode-line)
 
+(defcustom lunar-mode-line-prefix ""
+  "Text to display before the lunar phase icon in the mode-line."
+  :type 'string
+  :group 'lunar-mode-line)
+
+(defcustom lunar-mode-line-suffix ""
+  "Text to display after the lunar phase icon in the mode-line."
+  :type 'string
+  :group 'lunar-mode-line)
+
 ;; Internal lunar data
 
 (defvar lunar-mode-line-string nil
@@ -66,9 +76,9 @@
 
 (defvar lunar-mode-line-text-representation-alist
   '((0 . "(/)")
-    (1 . "(|")
+    (1 . "|)")
     (2 . "(·)")
-    (3 . "|)"))
+    (3 . "(|"))
   "*Alist mapping phase numbers to the strings used to represent them in the mode-line.
   Note: 0: New Moon, 1: First Quarter Moon, 2: Full Moon, 3: Last Quarter Moon")
 
@@ -109,7 +119,10 @@
 (defun lunar-mode-line-update ()
   "Update lunar phase information in the mode line."
   (setq lunar-mode-line-string
-	(concat (lunar-mode-line-current-phase-text-representation) " "))
+	(concat
+	 lunar-mode-line-prefix
+	 (lunar-mode-line-current-phase-text-representation)
+	 lunar-mode-line-suffix))
   (if lunar-mode-line-xemacs-p
       (redraw-modeline)
     (force-mode-line-update)))
