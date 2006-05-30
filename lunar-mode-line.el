@@ -1,6 +1,5 @@
 ;;; lunar-mode-line.el --- display lunar phase in mode line of Emacs -*-coding: utf-8 -*-
 
-;; Copyright (C) 1997 Noah S. Friedman
 ;; Copyright (C) 2006 Ben Voui
 
 ;; Author: Ben Voui <intrigeri@boum.org>
@@ -9,7 +8,7 @@
 ;; Status: Works in Emacs 22
 ;; Created: 2006-05-22
 
-;; $Id: lunar-mode-line.el 4 2006-05-26 16:37:05Z intrigeri $
+;; $Id: lunar-mode-line.el 5 2006-05-30 03:40:08Z intrigeri $
 ;; $URL: https://intrigeri.boum.org/svn/pub/lunar-mode-line/lunar-mode-line.el $
 
 ;; This program is free software; you can redistribute it and/or modify it
@@ -29,29 +28,23 @@
 
 ;;; Commentary:
 
-;; Inspired by twiddle.el, by Noah S. Friedman, which was itself inspired by
-;; a similar hack by Jim Blandy <jimb@cyclic.com>.
+;; Inspired by battery.el, by Ralph Schleicher <rs@nunatak.allgaeu.org>.
 
 ;;; Code:
 
 (require 'calendar)
 (require 'lunar)
+(require 'timer)
 
-(eval-and-compile
-  (defconst lunar-mode-line-xemacs-p
-    (save-match-data (string-match "XEmacs" (emacs-version))))
-  (if lunar-mode-line-xemacs-p
-      (require 'itimer)
-    (require 'timer))
-)
-
-;; Customization
+(defvar lunar-mode-line-string nil
+  "String to display in the mode line.")
+;;;###autoload (put 'lunar-mode-line-string 'risky-local-variable t)
 
 (defgroup lunar-mode-line nil
   "Display lunar phase in mode line of Emacs."
   :group 'modeline)
 
-(defcustom lunar-mode-line-delay 3600
+(defcustom lunar-mode-line-update-interval 3600
   "*Seconds between updates of lunar phase in the mode line."
   :type 'integer
   :group 'lunar-mode-line)
@@ -66,13 +59,50 @@
   :type 'string
   :group 'lunar-mode-line)
 
-;; Internal lunar data
-
-(defvar lunar-mode-line-string nil
-  "String to display in the mode line.")
-
 (defvar lunar-mode-line-timer nil
   "Interval timer object.")
+
+;;;###autoload
+(defun display-lunar-phase ()
+  "Display lunar phase information in the echo area."
+  (interactive)
+  (message "%s : %s"
+	   (lunar-mode-line-current-phase-name)
+	   (lunar-mode-line-current-phase-text-representation)))
+
+;;;###autoload
+(define-minor-mode display-lunar-phase-mode
+  "Toggle display of lunar phase information in the mode line.
+With a numeric arg, enable this display if arg is positive.
+
+The mode line will be updated automatically every
+`lunar-mode-line-update-interval' seconds."
+  :global t :group 'lunar-mode-line
+  (setq lunar-mode-line-string "")
+  (or global-mode-string (setq global-mode-string '("")))
+  (and lunar-mode-line-timer (cancel-timer lunar-mode-line-timer))
+  (if (not display-lunar-phase-mode)
+      (setq global-mode-string
+	    (delq 'lunar-mode-line-string global-mode-string))
+    (add-to-list 'global-mode-string 'lunar-mode-line-string t)
+    (setq lunar-mode-line-timer (run-at-time nil lunar-mode-line-update-interval
+					     'lunar-mode-line-update-handler))
+    (lunar-mode-line-update)))
+
+(defun lunar-mode-line-update-handler ()
+  (lunar-mode-line-update)
+  (sit-for 0))
+
+(defun lunar-mode-line-update ()
+  "Update lunar phase information in the mode line."
+  (setq lunar-mode-line-string
+	(propertize 
+	 (concat
+	  lunar-mode-line-prefix
+	  (lunar-mode-line-current-phase-text-representation)
+	  lunar-mode-line-suffix)
+	 'help-echo "Lunar phase information"))
+  (force-mode-line-update))
 
 (defvar lunar-mode-line-text-representation-alist
   '((0 . "(/)")
@@ -103,54 +133,6 @@
 
 (defun lunar-mode-line-current-phase-text-representation ()
   (cdr (assoc (lunar-mode-line-current-phase) lunar-mode-line-text-representation-alist)))
-
-(defun lunar-mode-line-timer-stop (timer)
-  (cond (lunar-mode-line-xemacs-p
-         (and (itimerp timer)
-              (delete-itimer timer)))
-        ((timerp timer)
-         ;; If this function is called from the timer itself, the timer
-         ;; object isn't present on timer-list so cancel-timer won't do
-         ;; anything useful.  To work around this case, disable the timer
-         ;; repeat so it will expire on its own.
-         (timer-set-time timer '(0 0) 0)
-         (cancel-timer timer))))
-
-(defun lunar-mode-line-update ()
-  "Update lunar phase information in the mode line."
-  (setq lunar-mode-line-string
-	(concat
-	 lunar-mode-line-prefix
-	 (lunar-mode-line-current-phase-text-representation)
-	 lunar-mode-line-suffix))
-  (if lunar-mode-line-xemacs-p
-      (redraw-modeline)
-    (force-mode-line-update)))
-
-;; Interactive functions
-
-
-;;;###autoload
-(defun lunar-mode-line-start ()
-  "Start displaying lunar phase in mode line."
-  (interactive)
-  (lunar-mode-line-stop)
-  (setq lunar-mode-line-string "")
-  (add-to-list 'global-mode-string 'lunar-mode-line-string "append")
-  (setq lunar-mode-line-timer
-	(cond (lunar-mode-line-xemacs-p
-	       (start-itimer "lunar-mode-line" 'lunar-mode-line-update 1 lunar-mode-line-delay))
-	      (t
-	       (apply 'run-with-timer 1 lunar-mode-line-delay (list 'lunar-mode-line-update))))))
-
-(defun lunar-mode-line-stop ()
-  "Stop displaying lunar phase in mode line."
-  (interactive)
-  (lunar-mode-line-timer-stop lunar-mode-line-timer)
-  (setq lunar-mode-line-timer nil)
-  (setq global-mode-string (delq 'lunar-mode-line-string global-mode-string))
-  (setq lunar-mode-line-string nil)
-  (lunar-mode-line-update))
 
 (provide 'lunar-mode-line)
 
