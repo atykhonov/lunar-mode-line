@@ -8,8 +8,7 @@
 ;; Status: Works in Emacs 22
 ;; Created: 2006-05-22
 
-;; $Id: lunar-mode-line.el 5 2006-05-30 03:40:08Z intrigeri $
-;; $URL: https://intrigeri.boum.org/svn/pub/lunar-mode-line/lunar-mode-line.el $
+;; URL: darcs get --partial https://gaffer.boum.org/darcs/pub/lunar-mode-line/
 
 ;; This program is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
