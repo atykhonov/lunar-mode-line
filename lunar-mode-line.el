@@ -1,6 +1,6 @@
 ;;; lunar-mode-line.el --- display lunar phase in mode line of Emacs -*-coding: utf-8 -*-
 
-;; Copyright (C) 2006 Ben Voui
+;; Copyright (C) 2006-2008 Ben Voui
 
 ;; Author: Ben Voui <intrigeri@boum.org>
 ;; Maintainer: intrigeri@boum.org
@@ -8,7 +8,7 @@
 ;; Status: Works in Emacs 22
 ;; Created: 2006-05-22
 
-;; URL: darcs get --partial https://gaffer.boum.org/darcs/pub/lunar-mode-line/
+;; URL: git clone git://gaffer.ptitcanardnoir.org/lunar-mode-line.git
 
 ;; This program is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
