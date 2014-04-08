@@ -37,7 +37,15 @@
 
 (defvar lunar-mode-line-string nil
   "String to display in the mode line.")
-;;;###autoload (put 'lunar-mode-line-string 'risky-local-variable t)
+
+(put 'lunar-mode-line-string 'risky-local-variable t)
+
+(defconst lunar-mode-line-directory (file-name-directory (or load-file-name buffer-file-name)))
+
+(defconst lunar-mode-line-image-new (concat lunar-mode-line-directory "images/new.png"))
+(defconst lunar-mode-line-image-full (concat lunar-mode-line-directory "images/full.png"))
+(defconst lunar-mode-line-image-first-quarter (concat lunar-mode-line-directory "images/first_quarter.png"))
+(defconst lunar-mode-line-image-last-quarter (concat lunar-mode-line-directory "images/last_quarter.png"))
 
 (defgroup lunar-mode-line nil
   "Display lunar phase in mode line of Emacs."
@@ -58,8 +66,31 @@
   :type 'string
   :group 'lunar-mode-line)
 
+(defcustom lunar-mode-line-use-images t
+  "Indicates whether to display lunar phase icon as an image."
+  :type 'string
+  :group 'lunar-mode-line)
+
 (defvar lunar-mode-line-timer nil
   "Interval timer object.")
+
+(defvar lunar-mode-line-text-representation-alist
+  '((0 . "(/)")
+    (1 . "|)")
+    (2 . "(·)")
+    (3 . "(|"))
+  "Alist mapping phase numbers to the strings used to represent them in the mode-line.
+  Note: 0: New Moon, 1: First Quarter Moon, 2: Full Moon, 3: Last
+  Quarter Moon")
+
+(defvar lunar-mode-line-image-alist
+  '((0 . lunar-mode-line-image-new)
+    (1 . lunar-mode-line-image-first-quarter)
+    (2 . lunar-mode-line-image-full)
+    (3 . lunar-mode-line-image-last-quarter))
+  "Alist mapping phase numbers to the images used to represent them in the mode-line.
+  Note: 0: New Moon, 1: First Quarter Moon, 2: Full Moon, 3: Last
+  Quarter Moon")
 
 ;;;###autoload
 (defun display-lunar-phase ()
@@ -92,24 +123,26 @@ The mode line will be updated automatically every
   (lunar-mode-line-update)
   (sit-for 0))
 
-(defun lunar-mode-line-update ()
-  "Update lunar phase information in the mode line."
-  (setq lunar-mode-line-string
-	(propertize 
-	 (concat
-	  lunar-mode-line-prefix
-	  (lunar-mode-line-current-phase-text-representation)
-	  lunar-mode-line-suffix)
-	 'help-echo "Lunar phase information"))
-  (force-mode-line-update))
+(defun lunar-mode-line-create ()
+  (propertize "-" 'display
+              (create-image (lunar-mode-line-current-phase-image-filename)
+                            'png nil
+                            :ascent 'center
+                            :background (face-background 'mode-line))
+              'help-echo "Lunar phase information"))
 
-(defvar lunar-mode-line-text-representation-alist
-  '((0 . "(/)")
-    (1 . "|)")
-    (2 . "(·)")
-    (3 . "(|"))
-  "*Alist mapping phase numbers to the strings used to represent them in the mode-line.
-  Note: 0: New Moon, 1: First Quarter Moon, 2: Full Moon, 3: Last Quarter Moon")
+(defun lunar-mode-line-update ()
+  "Update lunar phase information in the mode line."  
+  (if lunar-mode-line-use-images
+      (setq lunar-mode-line-string '(:eval (lunar-mode-line-create)))
+    (setq lunar-mode-line-string
+          (propertize 
+           (concat
+            lunar-mode-line-prefix
+            (lunar-mode-line-current-phase-text-representation)
+            lunar-mode-line-suffix)
+           'help-echo "Lunar phase information")))
+  (force-mode-line-update))
 
 ;; Aux. functions
 
@@ -132,6 +165,9 @@ The mode line will be updated automatically every
 
 (defun lunar-mode-line-current-phase-text-representation ()
   (cdr (assoc (lunar-mode-line-current-phase) lunar-mode-line-text-representation-alist)))
+
+(defun lunar-mode-line-current-phase-image-filename ()
+  (symbol-value (cdr (assoc (lunar-mode-line-current-phase) lunar-mode-line-image-alist))))
 
 (provide 'lunar-mode-line)
 
