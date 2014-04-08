@@ -4,6 +4,7 @@
 
 ;; Author: Ben Voui <intrigeri@boum.org>
 ;; Maintainer: intrigeri@boum.org
+;; Contributor: atykhonov@gmail.com
 ;; Keywords: extensions
 ;; Status: Works in Emacs 22
 ;; Created: 2006-05-22
