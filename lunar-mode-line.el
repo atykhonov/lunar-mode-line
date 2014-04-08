@@ -1,6 +1,6 @@
 ;;; lunar-mode-line.el --- display lunar phase in mode line of Emacs -*-coding: utf-8 -*-
 
-;; Copyright (C) 2006-2008 Ben Voui
+;; Copyright (C) 2006-2014 Ben Voui
 
 ;; Author: Ben Voui <intrigeri@boum.org>
 ;; Maintainer: intrigeri@boum.org
