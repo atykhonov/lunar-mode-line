@@ -6,8 +6,10 @@
 ;; Maintainer: intrigeri@boum.org
 ;; Contributor: atykhonov@gmail.com
 ;; Keywords: extensions
-;; Status: Works in Emacs 22
+;; Status: Works in Emacs 22 (in case of lunar-mode-line-use-images is nil).
+;; For image representation it is probably required >=Emacs 24.3
 ;; Created: 2006-05-22
+;; Updated: 2014-04-09
 
 ;; URL: git clone git://gaffer.ptitcanardnoir.org/lunar-mode-line.git
 
