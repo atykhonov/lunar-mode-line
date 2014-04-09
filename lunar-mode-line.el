@@ -7,11 +7,11 @@
 ;; Contributor: atykhonov@gmail.com
 ;; Keywords: extensions
 ;; Status: Works in Emacs 22 (in case of lunar-mode-line-use-images is nil).
-;; For image representation it is probably required >=Emacs 24.3
+;; For graphic representation it is probably required >=Emacs 24.3
 ;; Created: 2006-05-22
 ;; Updated: 2014-04-09
 
-;; URL: git clone git://gaffer.ptitcanardnoir.org/lunar-mode-line.git
+;; URL: https://github.com/atykhonov/lunar-mode-line
 
 ;; This program is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
@@ -31,6 +31,8 @@
 ;;; Commentary:
 
 ;; Inspired by battery.el, by Ralph Schleicher <rs@nunatak.allgaeu.org>.
+;; Graphic representation inspired by nyan-mode, by Jacek "TeMPOraL" Zlydach
+;; <temporal.pl@gmail.com>
 
 ;;; Code:
 
